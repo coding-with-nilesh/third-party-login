@@ -96,7 +96,7 @@ export default App;
 
 function LogInPage(){
   return (
-    <div>LoginPage</div>
+    <div className="login-page">LoginPage</div>
   );
 }
 
