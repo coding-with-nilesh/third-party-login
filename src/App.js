@@ -62,7 +62,3 @@ function App() {
 }
  
 export default App;
-
-function GoogleLoginComponent(){
-
-}
