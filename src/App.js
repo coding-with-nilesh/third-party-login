@@ -38,7 +38,7 @@ function App() {
  
   return (
     <div>
-      <h3>Login with Google using React</h3>
+      <h3>Login with Google</h3>
       {user ? <div>
         <div className="name">Welcome {user.name}!</div>
         <GoogleLogout
@@ -62,3 +62,7 @@ function App() {
 }
  
 export default App;
+
+function GoogleLoginComponent(){
+
+}
