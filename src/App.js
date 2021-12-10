@@ -1,102 +1,64 @@
-import './App.css';
-import { useEffect, useState } from 'react';
-import { googleLoadScript } from './googleLoadScript';
-const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-
+import React, { useState } from 'react';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+ 
+const clientId = "33379542328-ejd4qapmis197sg0q26om3kq7vb0e20m.apps.googleusercontent.com";
+ 
 function App() {
-  
-  const [gapi, setGapi] = useState();
-  const [googleAuth, setGoogleAuth] = useState();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [imageUrl, setImageUrl] = useState();
-  
-  const onSuccess = (googleUser) => {
-    setIsLoggedIn(true);
-    const profile = googleUser.getBasicProfile();
-    setName(profile.getName());
-    setEmail(profile.getEmail());
-    setImageUrl(profile.getImageUrl());
-  };
-  
-  const onFailure = () => {
-    setIsLoggedIn(false);
+ 
+  const [loading, setLoading] = useState('Loading...');
+  const [user, setUser] = useState(null);
+ 
+  const handleLoginSuccess = (response) => {
+    console.log("Login Success ", response);
+    setUser(response.profileObj);
+    setLoading();
   }
-  
-  const logOut = () => {
-    (async() => {
-      await googleAuth.signOut();
-      setIsLoggedIn(false);
-      renderSigninButton(gapi);
-    })();
-  };
-  
-  const renderSigninButton = (_gapi) => {
-    _gapi.signin2.render('google-signin', {
-      'scope': 'profile email',
-      'width': 240,
-      'height': 50,
-      'longtitle': true,
-      'theme': 'dark',
-      'onsuccess': onSuccess,
-      'onfailure': onFailure 
-    });
+ 
+  const handleLoginFailure = error => {
+    console.log("Login Failure ", error);
+    setLoading();
   }
-  
-  
-  useEffect(() => {
-    
-    //window.gapi is available at this point
-    window.onGoogleScriptLoad = () => {
-     
-      const _gapi = window.gapi;
-      setGapi(_gapi);
-      
-      _gapi.load('auth2', () => {
-        (async () => { 
-          const _googleAuth = await _gapi.auth2.init({
-           client_id: googleClientId
-          });
-          setGoogleAuth(_googleAuth);
-          renderSigninButton(_gapi);
-        })();
-      });
-    }
-    
-    //ensure everything is set before loading the script
-     googleLoadScript();
-    
-  }, []);
-  
-  
+ 
+  const handleLogoutSuccess = (response) => {
+    console.log("Logout Success ", response);
+    setUser(null);
+  }
+ 
+  const handleLogoutFailure = error => {
+    console.log("Logout Failure ", error);
+  }
+ 
+  const handleRequest = () => {
+    setLoading("Loading...");
+  }
+ 
+  const handleAutoLoadFinished = () => {
+    setLoading();
+  }
+ 
   return (
-    <div className="App">
-      <header className="App-header">
-        {!isLoggedIn &&
-          <div id="google-signin"><LogInPage/></div>
-        }
-        
-        {isLoggedIn &&
-          <div>
-            <div>
-              <img src={imageUrl} />
-            </div>
-            <div>{name}</div>
-            <div>{email}</div>
-            <button className='btn-primary' onClick={logOut}>Log Out</button>
-          </div>
-        }
-      </header>
+    <div>
+      <h3>Login with Google using React - <a href="https://www.cluemediator.com/" target="_blank" rel="noopener noreferrer">Clue Mediator</a></h3>
+      {user ? <div>
+        <div className="name">Welcome {user.name}!</div>
+        <GoogleLogout
+          clientId={clientId}
+          onLogoutSuccess={handleLogoutSuccess}
+          onFailure={handleLogoutFailure}
+        />
+        <pre>{JSON.stringify(user, null, 2)}</pre>
+      </div> :
+        <GoogleLogin
+          clientId={clientId}
+          buttonText={loading}
+          onSuccess={handleLoginSuccess}
+          onFailure={handleLoginFailure}
+          onRequest={handleRequest}
+          onAutoLoadFinished={handleAutoLoadFinished}
+          isSignedIn={true}
+        />}
     </div>
   );
 }
-
+ 
 export default App;
-
-function LogInPage(){
-  return (
-    <div className="login-page">LoginPage</div>
-  );
-}
-
