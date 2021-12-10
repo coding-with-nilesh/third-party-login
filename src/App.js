@@ -4,7 +4,15 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;// Reading google client id from .env file
 
 function App() {
+  return (
+    <GoogleLoginExample />
+  );
 
+}
+
+export default App;
+
+function GoogleLoginExample() {
   const [loading, setLoading] = useState('Loading...');
   const [user, setUser] = useState(null);
 
@@ -65,5 +73,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
