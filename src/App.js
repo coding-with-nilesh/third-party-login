@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import { useGoogleLogin } from 'react-google-login';
+// refresh token
+import { refreshToken } from './hooks/refresh-token';
 
 const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;// Reading google client id from .env file
 
@@ -56,16 +59,56 @@ function App() {
           onRequest={handleRequest}
           onAutoLoadFinished={handleAutoLoadFinished}
           isSignedIn={true}
+          style={{ marginTop: '100px', color: 'red' }}
         />}
 
-        <GoogleAuth/>
+      {/* Using Hooks */}
+      <LoginGoogleUsingHook />
+      <GoogleAuth />
     </div>
   );
 }
 
 export default App;
 
+// function LoginGoogleUsingComponent(){
+//   return (
 
+//   );
+// }
+
+function LoginGoogleUsingHook() {
+  const onSuccess = (res) => {
+    console.log('Login Success: currentUser:', res.profileObj);
+    alert(
+      `Logged in successfully welcome ${res.profileObj.name} 😍. \n See console for full profile object.`
+    );
+    refreshToken(res);
+  };
+
+  const onFailure = (res) => {
+    console.log('Login failed: res:', res);
+    alert(
+      `Failed to login. 😢 Please ping this to repo owner twitter.com/sivanesh_fiz`
+    );
+  };
+
+  const { signIn } = useGoogleLogin({
+    onSuccess,
+    onFailure,
+    clientId,
+    isSignedIn: true,
+    accessType: 'offline',
+    // responseType: 'code',
+    // prompt: 'consent',
+  });
+
+  return (
+    <button onClick={signIn} className="button">
+      <span className="buttonText">Sign in with Google</span>
+    </button>
+  );
+}
 
 // Add    <script src='https://apis.google.com/js/api.js'></script> in index.html
 class GoogleAuth extends React.Component {
@@ -86,12 +129,12 @@ class GoogleAuth extends React.Component {
     })
   }
 
-  onSignInClick=()=>{
+  onSignInClick = () => {
     this.auth.signIn()
-    }
-    onSignOutClick=()=>{
+  }
+  onSignOutClick = () => {
     this.auth.signOut()
-    }
+  }
 
   onAuthChange = () => {
     this.setState({ isSignedIn: this.auth.isSignedIn.get() })
