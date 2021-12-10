@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
  
-const clientId = "33379542328-ejd4qapmis197sg0q26om3kq7vb0e20m.apps.googleusercontent.com";
+const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;// Reading google client id from .env file
  
 function App() {
  
@@ -38,7 +38,7 @@ function App() {
  
   return (
     <div>
-      <h3>Login with Google using React - <a href="https://www.cluemediator.com/" target="_blank" rel="noopener noreferrer">Clue Mediator</a></h3>
+      <h3>Login with Google using React</h3>
       {user ? <div>
         <div className="name">Welcome {user.name}!</div>
         <GoogleLogout
